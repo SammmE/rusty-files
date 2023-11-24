@@ -25,7 +25,6 @@ fn get_disks() -> serde_json::Value {
         });
         disks.push(disk_json);
     }
-    print!("Disks: {:?}", disks);
 
     if disks.len() == 0 {
         match home::home_dir() {
@@ -84,10 +83,17 @@ fn get_base() -> path::PathBuf {
         println!("Creating base directory: {:?}", base);
         fs::create_dir_all(&base).expect("Failed to create base directory");
     }
+    let mut conf: path::PathBuf = base.clone();
+    conf.push("config.json");
+    if !conf.exists() {
+        println!("Creating config file: {:?}", conf);
+        fs::write(&conf, "{\"Pallet\": {background = \"#F7EEDD\",primary = \"#000000\",secondary = \"#FF7F50\",tertiary = \"#8B4513\",quaternary = \"#B2703A\",dark = true}}").expect("Failed to create config file");
+    }
     base
 }
 
 fn main() {
+    get_base();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_disks,

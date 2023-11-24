@@ -1,6 +1,8 @@
 import axios from "axios";
 import * as React from "react";
 
+import config from ".rusty-files/config.json";
+
 class _Pallet {
     constructor({
         background = "#F7EEDD",
@@ -89,7 +91,7 @@ class _Pallet {
     }
 }
 
-const Pallet = new _Pallet({});
+const Pallet = new _Pallet(config);
 
 const Theme = ({ children }) => {
     const updateTheme = () => {
