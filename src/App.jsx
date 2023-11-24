@@ -14,7 +14,8 @@ function App() {
     React.useEffect(() => {
         invoke("get_disks")
             .then((disks) => {
-                if (disks.length == 1) {
+                console.log(disks);
+                if (disks.length == 0) {
                     if (disks[0].total_space == 0) {
                         Focus.selectDrive();
                         Focus.selectFolder(disks[0].name);

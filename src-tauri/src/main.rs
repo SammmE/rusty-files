@@ -1,13 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::path;
 use std::env;
 use std::fs;
+use std::path;
 
 use serde_json::json;
 
-use sysinfo::{System, SystemExt, DiskExt};
+use sysinfo::{DiskExt, System, SystemExt};
 
 use home;
 
@@ -25,6 +25,7 @@ fn get_disks() -> serde_json::Value {
         });
         disks.push(disk_json);
     }
+    print!("Disks: {:?}", disks);
 
     if disks.len() == 0 {
         match home::home_dir() {
