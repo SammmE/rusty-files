@@ -82,7 +82,6 @@ fn get_base() -> path::PathBuf {
     if !base.exists() {
         println!("Creating base directory: {:?}", base);
         fs::create_dir_all(&base).expect("Failed to create base directory");
-        fs::File::create(base.join("test.txt")).expect("Failed to create test file");
     }
     base
 }

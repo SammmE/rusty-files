@@ -1,11 +1,62 @@
 import "./App.css";
 
+import * as React from "react";
+
+import { invoke } from "@tauri-apps/api";
+
+import Focus from "./Focus";
+import Theme, { Pallet } from "./Pallet";
+import Navbar from "./components/Navbar";
+
 function App() {
-    return (
-    <div>
-      hi
-    </div>
-  );
+    const [disks, setDisks] = React.useState([]);
+
+    React.useEffect(() => {
+        invoke("get_disks")
+            .then((disks) => {
+                if (disks.length == 1) {
+                    if (disks[0].total_space == 0) {
+                        Focus.selectDrive();
+                        Focus.selectFolder(disks[0].name);
+                    }
+                }
+
+                return disks;
+            })
+            .then((disks) => {
+                setDisks(disks);
+                return disks;
+            })
+            .catch((err) => console.log(err));
+    }, []);
+
+    if (disks.length === 0) {
+        return <div>Loading...</div>;
+    } else {
+        return (
+            <Theme>
+                <Navbar
+                    titleComponent={<h3 className="title">Select a drive</h3>}
+                    leftComponents={[]}
+                    rightComponents={[]}
+                />
+                <div className="driveContainer">
+                    {disks.map((disk) => (
+                        <button
+                            onClick={() => {
+                                Focus.selectFolder(disk.name);
+                                Pallet.randomize();
+                            }}
+                            key={disk.name}
+                            className="coolBtn"
+                        >
+                            {disk.name}
+                        </button>
+                    ))}
+                </div>
+            </Theme>
+        );
+    }
 }
 
 export default App;
