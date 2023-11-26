@@ -76,7 +76,19 @@ fn get_folder_data(path: &str, depth: u16) -> serde_json::Value {
 #[tauri::command]
 fn get_base() -> path::PathBuf {
     let mut base: path::PathBuf = path::PathBuf::new();
-    base.push(".rusty-files");
+    if env::consts::OS == "windows" {
+        base.push(env::var("APPDATA").unwrap());
+        base.push("rusty-files");
+    } else if env::consts::OS == "macos" {
+        base.push(home::home_dir().unwrap());
+        base.push("Library");
+        base.push("Application Support");
+        base.push("rusty-files");
+    } else {
+        base.push(home::home_dir().unwrap());
+        base.push(".config");
+        base.push("rusty-files");
+    }
 
     // make sure base exists. If not, create it
     if !base.exists() {
@@ -87,9 +99,22 @@ fn get_base() -> path::PathBuf {
     conf.push("config.json");
     if !conf.exists() {
         println!("Creating config file: {:?}", conf);
-        fs::write(&conf, "{\"Pallet\": {background = \"#F7EEDD\",primary = \"#000000\",secondary = \"#FF7F50\",tertiary = \"#8B4513\",quaternary = \"#B2703A\",dark = true}}").expect("Failed to create config file");
+        fs::write(&conf, get_default_conf().to_string()).expect("Failed to create config file");
     }
     base
+}
+
+fn get_default_conf() -> serde_json::Value {
+    json!({
+        "pallete": {
+            "background": "#F7EEDD",
+            "primary": "#000000",
+            "secondary": "#FF7F50",
+            "tertiary": "#8B4513",
+            "quaternary": "#B2703A",
+            "dark": true,
+        }
+    })
 }
 
 fn main() {

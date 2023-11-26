@@ -1,9 +1,9 @@
+import { invoke } from "@tauri-apps/api";
+import { fs } from "@tauri-apps/api";
 import axios from "axios";
 import * as React from "react";
 
-import config from ".rusty-files/config.json";
-
-class _Pallet {
+class _pallete {
     constructor({
         background = "#F7EEDD",
         primary = "#000000",
@@ -20,14 +20,7 @@ class _Pallet {
         this.dark = dark;
     }
 
-    change({
-        background = "#7D4031",
-        primary = "#D9BF8E",
-        secondary = "#8B5742",
-        tertiary = "#A8683A",
-        quaternary = "#634D3C",
-        dark = true,
-    }) {
+    change({ background, primary, secondary, tertiary, quaternary, dark }) {
         this.background = background;
         this.primary = primary;
         this.secondary = secondary;
@@ -80,55 +73,69 @@ class _Pallet {
                 if (!this.dark) {
                     this.changeTheme();
                 }
-                if (this.palletUpdated) {
-                    this.palletUpdated();
+                if (this.palleteUpdated) {
+                    this.palleteUpdated();
                 }
             })
             .catch((error) => {
                 console.log(error);
             });
-        console.log("randomized pallet");
+        console.log("randomized pallete");
     }
 }
 
-const Pallet = new _Pallet(config);
+const pallete = new _pallete({});   
+invoke("get_base")
+    .then((res) => {
+        fs.readTextFile(res + "/config.json")
+            .then((data) => {
+                const { pallete: pal } = JSON.parse(data);
+                pallete.change(pal);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 const Theme = ({ children }) => {
     const updateTheme = () => {
-        // Update CSS variables with values from Pallet
+        // Update CSS variables with values from pallete
         document.documentElement.style.setProperty(
             "--background-color",
-            Pallet.background
+            pallete.background
         );
         document.documentElement.style.setProperty(
             "--primary-color",
-            Pallet.primary
+            pallete.primary
         );
         document.documentElement.style.setProperty(
             "--secondary-color",
-            Pallet.secondary
+            pallete.secondary
         );
         document.documentElement.style.setProperty(
             "--tertiary-color",
-            Pallet.tertiary
+            pallete.tertiary
         );
         document.documentElement.style.setProperty(
             "--quaternary-color",
-            Pallet.quaternary
+            pallete.quaternary
         );
     };
 
     React.useEffect(() => {
         updateTheme();
 
-        const palletUpdated = () => {
+        const palleteUpdated = () => {
             updateTheme();
         };
 
-        Pallet.palletUpdated = palletUpdated;
+        pallete.palleteUpdated = palleteUpdated;
 
         return () => {
-            Pallet.palletUpdated = null;
+            pallete.palleteUpdated = null;
         };
     }, []);
 
@@ -145,4 +152,4 @@ const Theme = ({ children }) => {
 };
 
 export default Theme;
-export { Pallet };
+export { pallete };

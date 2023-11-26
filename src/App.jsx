@@ -5,7 +5,7 @@ import * as React from "react";
 import { invoke } from "@tauri-apps/api";
 
 import Focus from "./Focus";
-import Theme, { Pallet } from "./Pallet";
+import Theme, { pallete } from "./Pallete";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -46,7 +46,7 @@ function App() {
                         <button
                             onClick={() => {
                                 Focus.selectFolder(disk.name);
-                                Pallet.randomize();
+                                pallete.randomize();
                             }}
                             key={disk.name}
                             className="coolBtn"

@@ -112,3 +112,26 @@ body {
     -webkit-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
 }
+
+.themeSettings {
+    position: absolute;
+    padding-top: 50px;
+}
+
+.themeSettings::before {`
+    content: "";
+    display: block;
+    position: absolute;
+    border-top: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #000;
+}
+
+.themeSettingsVisible {
+    display: block;
+}
+
+.themeSettingsHidden {
+    display: none;
+}
